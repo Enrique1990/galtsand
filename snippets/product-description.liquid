@@ -1,0 +1,46 @@
+{%- if product_api -%}
+  <div class="product__block product__block--description{% if settings.show_lines %} product__block--lines{% endif %}"
+    {% if animation_name %}
+      data-animation="{{ animation_name }}"
+      data-animation-duration="{{ animation_duration }}"
+      data-animation-delay="{{ animation_delay }}"
+    {% endif %}>
+
+    {%- if product.description != blank -%}
+      <div class="product-quick-add__description rte">
+        {{ product.description | strip_html | truncatewords: 30, '...' }}
+      </div>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  {%- if block.settings.style == 'inline' -%}
+    <div class="product__block product__description rte" {{ block.shopify_attributes }}>
+      {%- if product.description != blank -%}
+        <div class="product__description__content rte">
+          {% comment %} Inline product description {% endcomment %}
+{%- assign product_description_content = product.description | strip -%}
+
+{%- if block.settings.show_read_more -%}
+  <toggle-ellipsis data-height="175">
+    <div class="toggle-ellipsis__content" data-content>
+      {{ product_description_content }}
+    </div>
+
+    <div class="toggle-ellipsis__actions" data-actions>
+      <button type="button" class="caps--link" data-button>
+        <span>{{ 'products.general.read_more' | t }}</span>
+      </button>
+    </div>
+  </toggle-ellipsis>
+{%- else -%}
+  {{ product_description_content }}
+{%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    <div class="product__block tabs-wrapper" {{ block.shopify_attributes }} {{ block_style }}>
+      {%- render 'product-tabs', product: product, block: block -%}
+    </div>
+  {%- endif -%}
+{%- endif -%}

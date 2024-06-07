@@ -1,0 +1,586 @@
+<!-- /sections/section-logo-list.liquid -->
+
+{%- liquid
+  assign animation_anchor = '#Countdown--' | append: section.id
+  assign animation_order = 0
+  assign desktop_height = section.settings.height
+  assign mobile_height = section.settings.mobile_height
+  assign image_desktop = section.settings.image
+  assign image_mobile = section.settings.image_mobile
+  assign bg_color = section.settings.bg_color
+  assign bg_gradient = section.settings.bg_gradient | default: 'none'
+  assign text_color = section.settings.color
+  assign digits_gradient = section.settings.digits_gradient | default: 'none'
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity | times: 0.01
+  assign show_overlay_text = section.settings.show_overlay_text
+  assign text_align = section.settings.text_align
+  assign text_align_mobile = section.settings.text_align_mobile
+  assign section_width = section.settings.width
+  assign layout = ''
+
+  if section_width == 'wrapper--narrow'
+    assign text_align = 'text-center'
+  endif
+
+  assign boxed = false
+  unless digits_gradient == 'none'
+    assign boxed = true
+  endunless
+
+  if text_align == 'text-center'
+    assign layout = 'flex-align-center--desktop flex-column '
+  endif
+
+  if text_align_mobile == 'text-center--mobile'
+    assign layout = layout | append: 'flex-align-center--mobile '
+  endif
+
+  assign layout = layout | append: text_align | append: ' ' | append: text_align_mobile
+
+  assign end_date = section.settings.end_date
+  assign end_time = section.settings.end_time
+  assign period = section.settings.period
+  assign end_message = section.settings.end_message
+  assign hide_on_complete = section.settings.hide_on_complete
+
+  assign end_time_hour = end_time | split: ':' | first | times: 1
+  assign end_time_minute = end_time | split: ':' | last
+
+  capture expiration_date
+    echo end_date
+    echo ' '
+    case period
+      when 'am'
+        case end_time_hour
+          when 0 or 12
+            echo '00' | append: ':' | append: end_time_minute
+          else
+            echo end_time
+        endcase
+
+      when 'pm'
+        capture hour
+          case end_time_hour
+            when 0 or 12
+              echo '12'
+            else
+              if end_time_hour < 12
+                echo end_time_hour | plus: 12
+              else
+                echo end_time_hour
+              endif
+          endcase
+        endcapture
+
+        echo hour | append: ':' | append: end_time_minute
+    endcase
+  endcapture
+-%}
+
+{%- capture style -%}
+  {%- unless text_color == 'rgba(0,0,0,0)' or text_color == blank -%}
+    --text: {{ text_color }};
+  {%- endunless -%}
+
+  {%- unless bg_color == 'rgba(0,0,0,0)' or bg_color == blank -%}
+    --bg: {{ bg_color }};
+  {%- endunless -%}
+
+  {%- unless bg_gradient == 'none' -%}
+    --bg-gradient: {{ bg_gradient }};
+  {%- endunless -%}
+
+  {%- unless digits_gradient == 'none' -%}
+    --digits-gradient: {{ digits_gradient }};
+  {%- endunless -%}
+{%- endcapture -%}
+
+{%- if style != blank -%}
+  {%- style -%}
+    #Countdown--{{ section.id }} {
+      {{ style }}
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+<section id="Countdown--{{ section.id }}"
+  class="section-countdown"
+  data-section-id="{{ section.id }}"
+  data-section-type="countdown">
+  <div class="{{ section_width }}">
+    {%- if image_desktop or image_mobile -%}
+      <div class="hero__bg">
+        <div class="hero__image">
+          {%- render 'image-hero', image_desktop: image_desktop, image_mobile: image_mobile -%}
+        </div>
+
+        {%- unless show_overlay_text or overlay_opacity == 0.0 -%}
+          <div class="image-overlay" style="--overlay-bg: {{ overlay_color }}; --overlay-opacity: {{ overlay_opacity }};"></div>
+        {%- endunless -%}
+      </div>
+    {%- endif -%}
+
+    <div class="brick__section {{ layout }} {{ desktop_height }} {{ mobile_height }}">
+
+      {%- if section.blocks.size > 0 -%}
+        <div class="brick__block">
+          <div class="hero__content__wrapper">
+            <div
+              class="hero__content hero__content--compact{% if show_overlay_text %} backdrop--radial{% endif %}"
+              {% if show_overlay_text %}
+                style="--overlay-bg: {{ overlay_color }}; --overlay-opacity: {{ overlay_opacity }};"
+              {% endif %}
+            >
+              {%- for block in section.blocks -%}
+
+                {%- case block.type -%}
+
+                  {%- when 'heading' -%}
+                    {%- if block.settings.title != blank -%}
+                      {%- assign animation_order = animation_order | plus: 1 -%}
+                      {%- assign font_size_class = block.settings.text_size | prepend: 'heading-size-' -%}
+                      <h2 class="hero__title {{ font_size_class }}"
+                        data-aos="hero"
+                        data-aos-anchor="{{ animation_anchor }}"
+                        data-aos-order="{{ animation_order }}"
+                        {{ block.shopify_attributes }}>
+                        {{ block.settings.title }}
+                      </h2>
+                    {%- endif -%}
+
+                  {%- when 'subheading' -%}
+                    {%- if block.settings.subheading != blank -%}
+                      {%- assign animation_order = animation_order | plus: 1 -%}
+                      {%- assign font_size_class = block.settings.text_size | prepend: 'subheading-size-' -%}
+                      <p class="hero__subheading {{ font_size_class }}"
+                        data-aos="hero"
+                        data-aos-anchor="{{ animation_anchor }}"
+                        data-aos-order="{{ animation_order }}"
+                        {{ block.shopify_attributes }}>
+                        {{ block.settings.subheading }}
+                      </p>
+                    {%- endif -%}
+
+                  {%- when 'text' -%}
+                    {%- if block.settings.text != blank -%}
+                      {%- assign animation_order = animation_order | plus: 1 -%}
+                      {%- assign font_size_class = block.settings.text_size | prepend: 'body-size-' -%}
+                      <div class="hero__rte {{ font_size_class }} {{ block.settings.text_style }}"
+                        data-aos="hero"
+                        data-aos-anchor="{{ animation_anchor }}"
+                        data-aos-order="{{ animation_order }}"
+                        {{ block.shopify_attributes }}>
+                        {{ block.settings.text }}
+                      </div>
+                    {%- endif -%}
+
+                  {%- when 'buttons' -%}
+                    {%- liquid
+                      assign button_style = block.settings.button_style
+                      if button_style == 'btn--text' and block.settings.show_arrow
+                        assign button_style = button_style | append: ' btn--text-no-underline'
+                      endif
+                    -%}
+
+                    {%- if block.settings.button_text != blank -%}
+                      {%- liquid
+                        assign prev_index = forloop.index0 | minus: 1
+                        assign next_index = forloop.index0 | plus: 1
+                        assign prev_block = section.blocks[prev_index]
+                        assign next_block = section.blocks[next_index]
+                        assign animation_order = animation_order | plus: 1
+                      -%}
+                      {%- if next_block.type == 'buttons' and forloop.index0 == 0 or prev_block.type != 'buttons' and next_index != section.blocks.size and next_block.type == 'buttons' -%}
+                        <div class="hero__button-group">
+                      {%- endif -%}
+
+                      <div class="hero__button"
+                        data-aos="hero"
+                        data-aos-anchor="{{ animation_anchor }}"
+                        data-aos-order="{{ animation_order }}"
+                        {{ block.shopify_attributes }}
+                      >
+                        <a href="{{ block.settings.button_url | default: '#!' }}" class="btn {{ button_style }} {{ block.settings.button_size }} {{ block.settings.button_type }}">
+                          <span>{{ block.settings.button_text }}</span>
+
+                          {%- if block.settings.show_arrow -%}
+                            {%- render 'icon-arrow-right' -%}
+                          {%- endif -%}
+                        </a>
+                      </div>
+
+                      {%- if prev_block.type == 'buttons' and next_block.type != 'buttons' and prev_index != -1 or forloop.index == section.blocks.size and prev_block.type == 'buttons' and prev_index != -1 -%}
+                        </div>
+                      {%- endif -%}
+                    {%- endif -%}
+
+                {%- endcase -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="brick__block text-center {{ text_align_mobile }}">
+        {%- render 'countdown-timer',
+          expiration_date: expiration_date,
+          text_size_desktop: section.settings.text_size,
+          text_size_mobile: section.settings.text_size_mobile,
+          end_message: end_message,
+          hide_on_complete: hide_on_complete,
+          animation_order: animation_order,
+          animation_anchor: animation_anchor
+          boxed: boxed
+        -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Countdown timer",
+    "settings": [
+      {
+        "type": "text",
+        "id": "end_date",
+        "label": "End date",
+        "placeholder": "2023-12-31 23:59",
+        "default": "2024-12-31",
+        "info": "Use format \"YYYY-MM-DD\". Expiration date is based on the [store primary timezone](/admin/settings/general)."
+      },
+      {
+        "type": "text",
+        "id": "end_time",
+        "label": "End time",
+        "default": "11:59",
+        "placeholder": "11:59",
+        "info": "Use 12-hour time convention in format \"HH:MM\""
+      },
+      {
+        "type": "radio",
+        "id": "period",
+        "label": "AM/PM",
+        "options": [
+          { "value": "am", "label": "AM" },
+          { "value": "pm", "label": "PM" }
+        ],
+        "default": "am"
+      },
+      {
+        "type": "richtext",
+        "id": "end_message",
+        "label": "End of timer message",
+        "default": "<p>Offer has expired</p>"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_on_complete",
+        "label": "Hide section after end of timer",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "label": "Digits size",
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "header",
+        "content": "Background image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_mobile",
+        "label": "Mobile image",
+        "info": "Optional"
+      },
+      {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Overlay opacity",
+        "info": "Increase contrast for legible text.",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 0
+      },
+      {
+        "type": "color",
+        "id": "overlay_color",
+        "label": "Overlay color",
+        "default": "#000"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_overlay_text",
+        "label": "Overlay behind text only",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "bg_color",
+        "label": "Background"
+      },
+      {
+        "type": "color_background",
+        "id": "bg_gradient",
+        "label": "Overlay gradient"
+      },
+      {
+        "type": "color",
+        "id": "color",
+        "label": "Text"
+      },
+      {
+        "type": "color_background",
+        "id": "digits_gradient",
+        "label": "Digits gradient"
+      },
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "height",
+        "label": "Desktop height",
+        "default": "four-fifty-height-hero",
+        "options": [
+          { "value": "four-fifty-height-hero", "label": "450px" },
+          { "value": "four-hundred-height-hero", "label": "400px" },
+          { "value": "three-fifty-height-hero", "label": "350px" },
+          { "value": "three-hundred-height-hero", "label": "300px" },
+          { "value": "two-fifty-height-hero", "label": "250px" },
+          { "value": "two-hundred-height-hero", "label": "200px" },
+          { "value": "one-fifty-height-hero", "label": "150px" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "mobile_height",
+        "label": "Mobile height",
+        "default": "four-fifty-height-hero--mobile",
+        "options": [
+          { "value": "four-fifty-height-hero--mobile", "label": "450px" },
+          { "value": "four-hundred-height-hero--mobile", "label": "400px" },
+          { "value": "three-fifty-height-hero--mobile", "label": "350px" },
+          { "value": "three-hundred-height-hero--mobile", "label": "300px" },
+          { "value": "two-fifty-height-hero--mobile", "label": "250px" },
+          { "value": "two-hundred-height-hero--mobile", "label": "200px" },
+          { "value": "one-fifty-height-hero--mobile", "label": "150px" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "default": "wrapper",
+        "options": [
+          {"value": "wrapper--full-padded", "label": "Full width padded"},
+          {"value": "wrapper", "label": "Normal"},
+          {"value": "wrapper--narrow", "label": "Narrow"}
+        ]
+      },
+      {
+        "type": "select",
+        "id": "text_align",
+        "label": "Style",
+        "default": "text-left",
+        "options": [
+          {"value": "text-left","label": "Split"},
+          {"value": "text-center","label": "Centered"}
+        ],
+        "info": "\"Split\" works with \"Normal\" and \"Full width padded\" layout only."
+      },
+      {
+        "type": "header",
+        "content": "Mobile"
+      },
+      {
+        "type": "range",
+        "id": "text_size_mobile",
+        "label": "Digits size",
+        "min": 1,
+        "max": 15,
+        "step": 1,
+        "default": 6
+      },
+      {
+        "type": "select",
+        "id": "text_align_mobile",
+        "label": "Text alignment",
+        "default": "text-left--mobile",
+        "options": [
+          { "value": "text-left--mobile","label": "Left" },
+          { "value": "text-center--mobile","label": "Centered" }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "subheading",
+        "name": "Subheading",
+        "settings": [
+          {
+            "type": "text",
+            "id": "subheading",
+            "label": "Subheading",
+            "default": "Countdown is on"
+          },
+          {
+            "type": "range",
+            "id": "text_size",
+            "label": "Text size",
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 3
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "name": "Heading",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Shop Before It Ends"
+          },
+          {
+            "type": "range",
+            "id": "text_size",
+            "label": "Text size",
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 8
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Share information about your limited offer or temporary promotion.</p>"
+          },
+          {
+            "type": "range",
+            "id": "text_size",
+            "label": "Text size",
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "default": 4
+          },
+          {
+            "type": "select",
+            "id": "text_style",
+            "label": "Text style",
+            "default": "font-body",
+            "options": [
+              {"value": "font-heading", "label": "Heading"},
+              {"value": "font-body", "label": "Body"}
+            ]
+          }
+        ]
+      },
+      {
+        "type": "buttons",
+        "name": "Button",
+        "settings": [
+          {
+            "type": "text",
+            "id": "button_text",
+            "label": "Text",
+            "default": "Shop now"
+          },
+          {
+            "type": "url",
+            "id": "button_url",
+            "label": "Link"
+          },
+          {
+            "type": "select",
+            "id": "button_type",
+            "label": "Color",
+            "default": "btn--primary",
+            "options": [
+              {"value": "btn--primary", "label": "Primary"},
+              {"value": "btn--secondary", "label": "Secondary"},
+              {"value": "btn--white", "label": "White"},
+              {"value": "btn--black", "label": "Black"}
+            ]
+          },
+          {
+            "type": "select",
+            "id": "button_size",
+            "label": "Size",
+            "default": "",
+            "options": [
+              { "label": "Small", "value": "btn--small" },
+              { "label": "Medium", "value": "" },
+              { "label": "Large", "value": "btn--large" }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "button_style",
+            "label": "Style",
+            "default": "btn--solid",
+            "options": [
+              { "label": "Solid", "value": "btn--solid" },
+              { "label": "Outline", "value": "btn--outline" },
+              { "label": "Text", "value": "btn--text" }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "show_arrow",
+            "label": "Show arrow",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Countdown",
+        "blocks": [
+          {
+            "type": "subheading"
+          },
+          {
+            "type": "heading"
+          },
+          {
+            "type": "buttons"
+          }
+        ]
+      }
+    ],
+    "disabled_on": {
+      "groups": ["header", "footer", "aside"]
+    }
+  }
+{% endschema %}

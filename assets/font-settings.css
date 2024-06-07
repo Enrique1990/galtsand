@@ -1,0 +1,67 @@
+@font-face {
+  font-family: Cardo;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/cardo/cardo_n4.eebb245e383be6550785a657b25f51c2b83d7e78.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=853e1c3c99d917dc7ea9cb5bbcf2629028a7d11222e6d81598c58a0380b7aa2d") format("woff2"),
+       url("//galtsand.com/cdn/fonts/cardo/cardo_n4.5873ec3470fadfb2463a972a55c13c82fcea3051.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=eb838e34591dd02477c4320cb3e9d65916f40b599a86a8f1f7ebf1a90297f5ef") format("woff");
+}
+
+@font-face {
+  font-family: Cardo;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/cardo/cardo_n4.eebb245e383be6550785a657b25f51c2b83d7e78.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=853e1c3c99d917dc7ea9cb5bbcf2629028a7d11222e6d81598c58a0380b7aa2d") format("woff2"),
+       url("//galtsand.com/cdn/fonts/cardo/cardo_n4.5873ec3470fadfb2463a972a55c13c82fcea3051.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=eb838e34591dd02477c4320cb3e9d65916f40b599a86a8f1f7ebf1a90297f5ef") format("woff");
+}
+
+@font-face {
+  font-family: "Avenir Next";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/avenir_next/avenirnext_n4.7fd0287595be20cd5a683102bf49d073b6abf144.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=e1138b33fb89f18b62cc30b3b3dfc426f0810142c6b93b23328f4bb89f297a66") format("woff2"),
+       url("//galtsand.com/cdn/fonts/avenir_next/avenirnext_n4.a26a334a0852627a5f36b195112385b0cd700077.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=1f88484fa3a326066484cb9da763618d00b6afb2d471141065c4e976d039aa63") format("woff");
+}
+
+
+
+  @font-face {
+  font-family: Cardo;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/cardo/cardo_n7.d02b7fb13fc5aac90b5334d99f92017ede2099f6.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=433a932bd7e55a1efc23bfbb65b5c759b90ad50eb47f444363bd35c6015ac2e8") format("woff2"),
+       url("//galtsand.com/cdn/fonts/cardo/cardo_n7.2bbbb0d9819b97cd025c56641e4eb6435f1c07d0.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=644e048e0241bb76e6638d16ce86c2ef2bfe0bd3e28ea6330a938aa0c24a0770") format("woff");
+}
+
+
+
+
+  @font-face {
+  font-family: Cardo;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/cardo/cardo_n7.d02b7fb13fc5aac90b5334d99f92017ede2099f6.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=433a932bd7e55a1efc23bfbb65b5c759b90ad50eb47f444363bd35c6015ac2e8") format("woff2"),
+       url("//galtsand.com/cdn/fonts/cardo/cardo_n7.2bbbb0d9819b97cd025c56641e4eb6435f1c07d0.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=644e048e0241bb76e6638d16ce86c2ef2bfe0bd3e28ea6330a938aa0c24a0770") format("woff");
+}
+
+
+
+
+
+
+
+  @font-face {
+  font-family: Cardo;
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("//galtsand.com/cdn/fonts/cardo/cardo_i4.ba89db3c4142ec13e3bf3f17199c5ea108d79415.woff2?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=ff2db0132e4ac476c6d73b2916ce7095fc7dfdd7d8907b51c4a0701faf78dd47") format("woff2"),
+       url("//galtsand.com/cdn/fonts/cardo/cardo_i4.ff03b5edfe47d923943a0a75ba7d3d2b706a4488.woff?h1=Z2FsdHNhbmQuY29t&h2=Z2FsdHNhbmQuYWNjb3VudC5teXNob3BpZnkuY29t&hmac=13dd23c2f57650e8499b89ef0aeddcca98a811dad6149b25883ae50374b0a29c") format("woff");
+}
+
+
+

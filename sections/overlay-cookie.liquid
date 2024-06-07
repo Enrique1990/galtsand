@@ -1,0 +1,72 @@
+<!-- /sections/overlay-cookie.liquid -->
+
+<div data-section-id="{{ section.id }}" data-section-type="popups">
+  <dialog
+    class="popup-cookies {{ section.settings.position }}"
+    data-tracking-consent
+    id="Popup--{{ section.id }}"
+    data-enable="{{ section.settings.show_cookies_popup }}"
+    data-cookie-name="{{ section.id }}"
+    aria-modal="true"
+    aria-labelledby="PopupCookie">
+    <form method="dialog">
+      <button class="visually-hidden no-js" aria-label="{{ 'general.accessibility.close' | t }}"></button>
+    </form>
+
+    {%- assign markup = 'general.cookies.cookies_link' | t -%}
+
+    {%- if shop.privacy_policy -%}
+      {%- capture markup -%}
+        <a href="{{ shop.privacy_policy.url }}">{{ 'general.cookies.cookies_link' | t }}</a>
+      {%- endcapture -%}
+    {%- endif -%}
+
+    <div data-tracking-consent-inner class="popup__tracking">
+      <div class="popup__tracking__text">
+        <p class="popup__title--cookies">{{- 'general.cookies.title' | t -}}</p>
+
+        <p>{{- 'general.cookies.text_html' | t: cookies: markup -}}</p>
+      </div>
+
+      <button class="text-link" data-confirm-cookies>{{ 'general.cookies.access' | t }}</button>
+    </div>
+  </dialog>
+</div>
+
+{% schema %}
+{
+  "name": "Cookie banner",
+  "class": "shopify-section-popups",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_cookies_popup",
+      "label": "Enable cookie tracking popup",
+      "info": "This feature uses the Shopify [consent tracking API](https://help.shopify.com/en/manual/your-account/privacy/cookies) and will not show in all regions.  Customer privacy tracking limits must be enabled in your [online store settings](/admin/online_store/preferences).  [Learn More](https://invisiblethemes.com/link/broadcast/docs/cookies)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "popup-cookies--left",
+          "label": "Left"
+        },
+        {
+          "value": "popup-cookies--right",
+          "label": "Right"
+        },
+        {
+          "value": "popup-cookies--bottom",
+          "label": "Bottom"
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "groups": ["aside"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,318 @@
+<!-- /sections/section-accordion-group.liquid -->
+{%- liquid
+  assign bg_color = section.settings.bg_color
+  assign text_color = section.settings.color
+  assign border_color = section.settings.border_color
+  assign columns = section.settings.columns
+  assign animation_anchor = '#AccordionGroup--' | append: section.id
+  assign animation_order = 0
+-%}
+
+{%- style -%}
+  #AccordionGroup--{{ section.id }} {
+    --PT: {{ section.settings.padding_top }}px;
+    --PB: {{ section.settings.padding_bottom }}px;
+
+    --accordion-columns: {{ columns }};
+
+    {%- unless bg_color == 'rgba(0,0,0,0)' or bg_color == blank -%}
+      --bg: {{ bg_color }};
+    {%- endunless -%}
+
+    {%- unless text_color == 'rgba(0,0,0,0)' or text_color == blank -%}
+      --text: {{ text_color }};
+    {%- endunless -%}
+
+    {%- unless border_color == 'rgba(0,0,0,0)' or border_color == blank -%}
+      --border: {{ border_color }};
+    {%- endunless -%}
+  }
+{%- endstyle -%}
+
+<div id="AccordionGroup--{{ section.id }}" class="accordion-group section-padding">
+  {%- if section.blocks.size > 0 -%}
+    <div class="faq {{ section.settings.width }}"
+      data-section-id="{{ section.id }}"
+      data-section-type="faq"
+    >
+      <collapsible-elements single="true">
+        <div class="accordion-group__items">
+          {%- for block in section.blocks -%}
+            {%- assign current_block = block.settings -%}
+
+            {%- if block.type == 'heading' and current_block.title != blank -%}
+              {%- assign animation_order = animation_order | plus: 1 -%}
+
+              <h3 class="accordion__heading h4"
+                data-aos="hero"
+                data-aos-anchor="{{ animation_anchor }}"
+                data-aos-order="{{ animation_order }}"
+                {{ block.shopify_attributes }}
+              >
+                {{ current_block.title }}
+              </h3>
+            {%- endif -%}
+
+            {%- if block.type == 'question' and current_block.title != blank and current_block.content != blank -%}
+              {%- if current_block.title != blank -%}
+                {%- assign animation_order = animation_order | plus: 1 -%}
+                <details class="accordion"
+                  data-collapsible
+
+                  {{ block.shopify_attributes }}
+                >
+                  <summary class="accordion__title h6" data-collapsible-trigger>
+                    {%- if block.settings.show_icon -%}
+                      {%- liquid
+                        assign icon_size = block.settings.icon_size
+                        assign icon_color = block.settings.icon_color
+                        assign icon_image = block.settings.icon_image
+                        capture icon_style
+                          echo 'style="'
+                          echo '--icon-size: ' | append: icon_size | append: 'px;'
+                          if icon_color != blank and icon_color != 'rgba(0,0,0,0)'
+                            echo ' --text: ' | append: icon_color | append: ';'
+                          endif
+                          echo '"'
+                        endcapture
+                      -%}
+
+                      <div class="icon__animated icon__animated--{{ block.id }}{% if icon_image != blank %} icon__animated--image{% endif %}" {{ icon_style }}>
+                        {%- liquid
+                          if icon_image
+                            assign icon_width = icon_size
+                            assign icon_width_retina = icon_width | times: 2
+                            assign icon_sizes = icon_width | append: 'px'
+                            assign icon_widths = icon_width | append: ', ' | append: icon_width_retina
+
+                            render 'image' image: icon_image, width: icon_width_retina, sizes: icon_sizes, widths: icon_widths
+                          else
+                            render 'animated-icon', filename: block.settings.icon_name
+                          endif
+                        -%}
+                      </div>
+                    {%- endif -%}
+
+                    {{ current_block.title }}
+
+                    {%- render 'icon-plus' -%}
+                    {%- render 'icon-minus' -%}
+                  </summary>
+
+                  <div class="accordion__body rte" data-collapsible-body>
+                    <div class="accordion__content" data-collapsible-content>
+                      {{ current_block.content }}
+                    </div>
+                  </div>
+                </details>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </collapsible-elements>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+  {
+    "name": "Accordion group",
+    "settings": [
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "default": "wrapper--narrow",
+        "options": [
+          { "value": "wrapper", "label": "Normal" },
+          { "value": "wrapper--narrow", "label": "Narrow" }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "columns",
+        "label": "Columns",
+        "default": "1",
+        "options": [
+          { "value": "1", "label": "One" },
+          { "value": "2", "label": "Two" }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "bg_color",
+        "label": "Background"
+      },
+      {
+        "type": "color",
+        "id": "color",
+        "label": "Text"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "Border"
+      },
+      {
+        "type": "header",
+        "content": "Section padding"
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding top",
+        "default": 50
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "label": "Padding bottom",
+        "default": 50
+      }
+    ],
+    "blocks": [
+      {
+        "name": "Heading",
+        "type": "heading",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "FAQ"
+          }
+        ]
+      },
+      {
+        "name": "Question",
+        "type": "question",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Question",
+            "info": "Block will not be visible if left empty.",
+            "default": "Frequently asked question"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Answer",
+            "default": "<p>Share details about your shipping policies, item returns, or customer service.<\/p>"
+          },
+          {
+            "type": "header",
+            "content": "Icon"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_icon",
+            "label": "Show icon",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "icon_name",
+            "label": "Icon",
+            "default": "icon-award",
+            "options": [
+              { "label": "Award", "value": "icon-award" },
+              { "label": "Box", "value": "icon-box" },
+              { "label": "Chat", "value": "icon-chat" },
+              { "label": "Cloud", "value": "icon-cloud" },
+              { "label": "Diameter", "value": "icon-diameter" },
+              { "label": "Discount", "value": "icon-discount" },
+              { "label": "Donation", "value": "icon-donation" },
+              { "label": "Droplet", "value": "icon-droplet" },
+              { "label": "Info", "value": "icon-info-empty" },
+              { "label": "Email", "value": "icon-email" },
+              { "label": "Fast shipment", "value": "icon-fast-shipment" },
+              { "label": "Flare", "value": "icon-flare" },
+              { "label": "Flower", "value": "icon-flower" },
+              { "label": "Gift", "value": "icon-gift" },
+              { "label": "Green shipment", "value": "icon-green-shipment" },
+              { "label": "Heart", "value": "icon-heart" },
+              { "label": "Leaf", "value": "icon-leaf" },
+              { "label": "Lightening", "value": "icon-lightening" },
+              { "label": "Location", "value": "icon-location" },
+              { "label": "Mail", "value": "icon-mail" },
+              { "label": "Notes", "value": "icon-notes" },
+              { "label": "Pants", "value": "icon-pants" },
+              { "label": "Peace", "value": "icon-peace" },
+              { "label": "Pin", "value": "icon-pin" },
+              { "label": "Planet", "value": "icon-planet" },
+              { "label": "Phone", "value": "icon-phone" },
+              { "label": "Recycle", "value": "icon-recycle" },
+              { "label": "Ruler", "value": "icon-ruler" },
+              { "label": "Shield", "value": "icon-shield" },
+              { "label": "Smile", "value": "icon-smile" },
+              { "label": "Star", "value": "icon-star" },
+              { "label": "Tree", "value": "icon-tree" },
+              { "label": "Trophy", "value": "icon-trophy" },
+              { "label": "Truck", "value": "icon-truck" },
+              { "label": "Vegan", "value": "icon-vegan" },
+              { "label": "Wash", "value": "icon-wash" },
+              { "label": "Washing machine", "value": "icon-washing-machine" }
+            ]
+          },
+          {
+            "type": "image_picker",
+            "id": "icon_image",
+            "label": "Alternative icon/image"
+          },
+          {
+            "type": "range",
+            "id": "icon_size",
+            "label": "Size",
+            "unit": "px",
+            "min": 20,
+            "max": 80,
+            "step": 5,
+            "default": 20
+          },
+          {
+            "type": "color",
+            "id": "icon_color",
+            "label": "Icon color",
+            "default": "#545454"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Accordion group",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "heading"
+          },
+          {
+            "type": "question"
+          },
+          {
+            "type": "question"
+          },
+          {
+            "type": "question"
+          }
+        ]
+      }
+    ],
+    "disabled_on": {
+      "groups": ["header", "aside", "custom.pre_footer", "footer"]
+    }
+  }
+{% endschema %}

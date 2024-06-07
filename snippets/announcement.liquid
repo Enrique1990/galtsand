@@ -1,0 +1,404 @@
+{%- liquid
+  assign is_top = false
+  assign show_browser_error = false
+  if section.location == 'header'
+    assign is_top = true
+    assign show_browser_error = true
+  endif
+
+  assign padding_top = section.settings.padding_top | default: 0
+  assign padding_bottom = section.settings.padding_bottom | default: 0
+  assign bg_color = section.settings.bg_color
+  assign text_color = section.settings.color
+  assign text_size = section.settings.text_size
+  assign show_border = section.settings.show_border
+  if section.location == 'header' and section.blocks.size == 0
+    assign show_border = false
+  endif
+  assign show_arrows = section.settings.show_arrows | default: false
+  assign text_align = section.settings.text_alignment | default: 'center'
+  assign justify_content = 'flex-start'
+  if text_align == 'center'
+    assign justify_content = 'center'
+  endif
+  assign bar_markup = ''
+  assign block_count = section.blocks.size
+  assign block_count_desktop = 0
+  assign block_count_mobile = 0
+  assign announcement_height = 'max(calc(var(--font-' | append: text_size | append: ') * var(--FONT-ADJUST-BODY) * var(--line-height-normal)), 36px)'
+-%}
+
+{%- for block in section.blocks -%}
+  {%- liquid
+    assign classes = 'announcement__slide'
+    assign target_device_class = ''
+    assign target_device_enable = false
+    assign show_wheel = true
+
+    if block.settings.text_style
+      assign text_style = block.settings.text_style | prepend: " "
+    endif
+    assign font_options = 'class="body-size-' | append: text_size | append: text_style | append: '"'
+    assign blocks_counter = blocks_counter | plus: 1
+    assign block_style = ''
+    assign color = block.settings.color
+
+    unless color == 'rgba(0,0,0,0)' or color == blank
+      capture block_style
+        echo '--text:' | append: color | append: ';'
+      endcapture
+    endunless
+
+    if block.settings.show_wheel == false
+      assign show_wheel = false
+    endif
+
+    comment
+      100px going to move for 1.63s
+    endcomment
+    assign marquee_time = 1.63
+
+    if section.settings.layout == 'slider'
+      assign classes = classes | append: ' announcement__bar'
+    endif
+
+    if block.settings.target_device_enabled
+      if block.settings.target_device == 'mobile'
+        assign target_device_class = ' mobile'
+        assign block_count_mobile = block_count_mobile | plus: 1
+      endif
+
+      if block.settings.target_device == 'desktop'
+        assign target_device_class = ' desktop'
+        assign block_count_desktop = block_count_desktop | plus: 1
+      endif
+
+      assign target_device_enable = true
+      assign classes = classes | append: target_device_class
+    endif
+
+    assign show_bar = true
+
+    if block.settings.target_url_enabled and block.settings.target_url != blank
+      assign show_bar = false
+    endif
+
+    if block.settings.target_referrer_enabled and block.settings.target_referrer != blank
+      assign show_bar = false
+    endif
+
+    if block.settings.target_url_enabled and block.settings.target_url != blank
+      if block.settings.target_url == request.path
+        assign show_bar = true
+      endif
+    endif
+  -%}
+
+  {%- assign target_refferer_attribute = '' -%}
+
+  {%- if block.settings.target_referrer_enabled and block.settings.target_referrer != blank -%}
+    {%- capture target_refferer_attribute -%}
+      data-target-referrer="{{ block.settings.target_referrer }}"
+    {%- endcapture -%}
+
+    {%- assign show_bar = true -%}
+  {%- endif -%}
+
+  {%- capture block_attributes -%}
+    {%- if classes != blank -%}
+      class="{{ classes }}"
+    {%- endif -%}
+
+    data-slide="{{ block.id }}"
+    data-slide-index="{{ forloop.index0 }}"
+    data-block-id="{{ block.id }}"
+    {{ target_refferer_attribute }}
+    {%- if target_device_enable -%}
+      data-target-device="true"
+    {%- endif -%}
+
+    {{ block.shopify_attributes }}
+  {%- endcapture -%}
+
+  {%- if show_bar -%}
+    {%- capture block_content -%}
+      {%- if block.type == 'image' -%}
+        {%- liquid
+          assign image = block.settings.image
+          assign image_aspect_ratio = image.aspect_ratio | default: 1
+          assign image_width = block.settings.image_width
+          assign sizes = image_width | append: 'px'
+          assign width = image_width | times: 2
+          assign width_retina = image_width | times: 2
+          assign widths = '100, 120, 140, 160, 180, 200, 240, 280, 320, 360, ' | append: image_width | append: ', ' | append: width_retina
+        -%}
+
+        <div{% if section.settings.layout == 'slider' %} data-ticker-text{% endif %} class="announcement__image" style="width: {{ image_width }}px; height: {{ image_width | divided_by: image_aspect_ratio }}px;">
+          {%- render 'image' image: image, sizes: sizes, width: width, widths: widths, show_backfill: false -%}
+        </div>
+      {%- else -%}
+        <div {{ font_options }}>
+          {%- case block.type -%}
+            {%- when 'text' -%}
+
+              {%- if block.settings.text != blank -%}
+                {{ block.settings.text | replace: '|', '<span class="announcement__divider"></span>' }}
+              {%- endif -%}
+
+            {%- when 'message' -%}
+              {%- if block.settings.message -%}
+                {% comment %} Free shipping {% endcomment %}
+
+{%- liquid
+  assign free_shipping_text = block.settings.message | default: settings.message
+  assign show_message = false
+
+  if block.settings.message != blank
+    assign show_message = true
+  endif
+
+  if settings.show_free_shipping_message and settings.free_shipping_limit != blank and free_shipping_text != blank
+    assign show_message = true
+  endif
+-%}
+
+{%- if show_message -%}
+  {%- liquid
+    assign limit = settings.free_shipping_limit | plus: 0
+    assign limit_currency = limit | times: 100
+    assign subtotal_without_currency = cart.total_price | plus: 0 | divided_by: 100
+    assign percent = limit | minus: subtotal_without_currency | times: 100 | divided_by: limit
+    assign percent = 100 | minus: percent
+
+    if settings.currency_code_enable
+      assign limit_currency = limit_currency | minus: cart.total_price | money_with_currency
+    else
+      assign limit_currency = limit_currency | minus: cart.total_price | money_without_trailing_zeros
+    endif
+
+    capture left_to_spend
+      echo '<span data-left-to-spend>' | append: limit_currency | append: '</span>'
+    endcapture
+
+    assign free_shipping_message = free_shipping_text | replace: '||amount||', left_to_spend
+    assign qualified_shipping_message = 'cart.general.qualified_shipping_message' | t
+
+    capture free_shipping_classes
+      if is_cart_drawer
+        echo 'drawer__message '
+      endif
+
+      if template.name == 'cart'
+        echo 'cart__message '
+      endif
+
+      echo 'free-shipping'
+
+      if subtotal_without_currency >= limit and qualified_shipping_message != blank
+        echo ' is-success'
+      endif
+    endcapture
+  -%}
+
+  <div class="{{ free_shipping_classes }}"
+    data-free-shipping="{% if qualified_shipping_message != blank %}true{% else %}false{% endif %}"
+    data-free-shipping-limit="{{ limit }}"
+    {% if template.name == 'cart' or is_cart_drawer %}
+      data-animation="{{ animation_name }}"
+      data-animation-duration="{{ animation_duration }}"
+      {% if empty_cart %}
+        {% assign animation_cart_empty_delay = animation_cart_empty_delay | plus: 50 %}
+        data-animation-delay="{{ animation_cart_empty_delay }}"
+      {% else %}
+      {% assign animation_delay = animation_delay | plus: 50 %}
+        data-animation-delay="{{ animation_delay }}"
+      {% endif %}
+    {% endif %}
+    >
+    {%- if show_wheel -%}
+      <div class="free-shipping__graph" data-progress-graph style="--stroke-dashoffset: 87.96459430051421;">
+        <svg height="18" width="18" viewBox="0 0 18 18">
+          <circle r="7" cx="9" cy="9" />
+          <circle class="free-shipping__graph-progress" stroke-dasharray="87.96459430051421 87.96459430051421" r="7" cx="9" cy="9" />
+        </svg>
+      </div>
+    {%- endif -%}
+
+    {%- if qualified_shipping_message != blank -%}
+      <span class="free-shipping__success-message">{{ qualified_shipping_message }}</span>
+    {%- endif -%}
+
+    <span class="free-shipping__default-message">
+      {{ free_shipping_message }}
+    </span>
+
+    {%- if show_progress_bar -%}
+      <progress class="free-shipping__progress-bar" data-progress-bar value="{{ percent }}" max="100"></progress>
+    {%- endif -%}
+
+    <div class="confetti">
+      <span class="confetti__dot confetti__dot--1"></span>
+      <span class="confetti__dot confetti__dot--2"></span>
+      <span class="confetti__dot confetti__dot--3"></span>
+      <span class="confetti__dot confetti__dot--4"></span>
+      <span class="confetti__dot confetti__dot--5"></span>
+      <span class="confetti__dot confetti__dot--6"></span>
+    </div>
+  </div>
+{%- endif -%}
+
+              {%- endif -%}
+
+            {%- when 'code' -%}
+              {%- if block.settings.code != blank -%}
+                {{ block.settings.code }}
+              {%- endif -%}
+          {%- endcase -%}
+        </div>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- capture bar_html -%}
+      {%- if section.settings.layout == 'marquee' -%}
+        <div class="announcement__slide{{ target_device_class }}" style="{{ block_style }}" {{ block.shopify_attributes }}>
+          {{ block_content }}
+        </div>
+      {%- else -%}
+        <ticker-bar style="{{ block_style }}" {{ block_attributes }}>
+          <div data-ticker-frame class="announcement__message">
+            <div data-ticker-scale class="announcement__scale ticker--unloaded">
+              {%- if block.type == 'image' -%}
+                {{ block_content }}
+              {%- else -%}
+                <div data-ticker-text class="announcement__text">
+                  {{ block_content }}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </ticker-bar>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- assign bar_markup = bar_markup | append: bar_html -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- capture style -%}
+  --PT: {{ padding_top }}px;
+  --PB: {{ padding_bottom }}px;
+
+  --ticker-direction: {{ section.settings.direction | default: 'ticker-rtl' }};
+
+  {%- unless bg_color == 'rgba(0,0,0,0)' or bg_color == blank -%}
+    --bg: {{ bg_color }};
+    --bg-transparent: {{ bg_color | color_modify: 'alpha', 0 }};
+  {%- else -%}
+    --bg: transparent;
+  {%- endunless -%}
+
+  {%- unless text_color == 'rgba(0,0,0,0)' or text_color == blank -%}
+    --text: {{ text_color }};
+    --link: {{ text_color }};
+    --link-hover: {{ text_color }};
+  {%- endunless -%}
+
+  --text-size: var(--font-{{ text_size }});
+  --text-align: {{ text_align }};
+  --justify-content: {{ justify_content }};
+{%- endcapture -%}
+
+{%- if is_top -%}
+  {%- style -%}
+    :root {
+      {%- if block_count == 0 -%}
+        --ANNOUNCEMENT-HEIGHT-DESKTOP: 0px;
+        --ANNOUNCEMENT-HEIGHT-MOBILE: 0px;
+      {%- elsif block_count == block_count_desktop -%}
+        --ANNOUNCEMENT-HEIGHT-DESKTOP: {{ announcement_height }};
+        --ANNOUNCEMENT-HEIGHT-MOBILE: 0px;
+      {%- elsif block_count == block_count_mobile -%}
+        --ANNOUNCEMENT-HEIGHT-DESKTOP: 0px;
+        --ANNOUNCEMENT-HEIGHT-MOBILE: {{ announcement_height }};
+      {%- else -%}
+        --ANNOUNCEMENT-HEIGHT-DESKTOP: {{ announcement_height }};
+        --ANNOUNCEMENT-HEIGHT-MOBILE: {{ announcement_height }};
+      {%- endif -%}
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+<div id="Announcement--{{ section.id }}"
+  class="announcement__wrapper{% if is_top %} announcement__wrapper--top{% else %} section-padding{% endif %}{% if show_border %} announcement__wrapper--borders{% endif %}"
+  data-announcement-wrapper
+  data-section-id="{{ section.id }}"
+  data-section-type="announcement"
+  style="{{ style }}">
+  {%- if show_browser_error -%}
+    <div class="announcement__bar announcement__bar--error">
+      <div class="announcement__message">
+        <div class="announcement__text">
+          <div class="announcement__main">{{ 'general.ie11_support_message' | t }}</div>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- if is_top == false and section.settings.background_image != blank -%}
+    <div class="announcement__bg-image">
+      {%- render 'image' image: section.settings.background_image, sizes: '100vw', cover: true -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    {%- if bar_markup != blank -%}
+      <announcement-bar class="announcement__bar-outer"
+        style="--padding-scrolling: {{ section.settings.message_spacing }}px;">
+        {%- if section.settings.layout == 'slider' -%}
+
+          <div class="announcement__bar-holder announcement__bar-holder--slider{% if show_arrows %} announcement__bar-holder--arrows{% endif %}">
+            <div class="announcement__slider"
+              data-slider
+              data-options='{"fade": true, "pageDots": false, "adaptiveHeight": false, "autoPlay": {{ section.settings.slider_speed | times: 1000 }}, "prevNextButtons": {{ show_arrows }}, "draggable": ">1"}'>
+              {{ bar_markup }}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.layout == 'marquee' -%}
+          <div class="announcement__bar-holder announcement__bar-holder--marquee">
+            <div class="announcement__bar">
+
+              {%- comment -%}
+                The "autoplay" attribute forces ticker to start playing by cloning its text elements 10 times
+              {%- endcomment -%}
+
+              <ticker-bar autoplay speed="{{ 100.0 | divided_by: section.settings.marquee_speed | times: marquee_time }}">
+                <div data-ticker-frame class="announcement__message">
+                  <div data-ticker-scale class="announcement__scale ticker--unloaded">
+                    <div data-ticker-text class="announcement__text">
+                      {{ bar_markup }}
+                    </div>
+                  </div>
+                </div>
+              </ticker-bar>
+            </div>
+          </div>
+        {%- endif -%}
+      </announcement-bar>
+    {%- endif -%}
+  {%- elsif is_top == false -%}
+    {%- render 'no-blocks' -%}
+  {%- endif -%}
+</div>
+
+{%- if request.design_mode -%}
+  <script defer>
+    document.addEventListener('shopify:block:select', (event) => {
+      event.target.closest('announcement-bar')?.dispatchEvent(new CustomEvent('theme:block:select', { detail: event.detail }))
+    });
+    document.addEventListener('shopify:block:deselect', (event) => {
+      event.target.closest('announcement-bar')?.dispatchEvent(new CustomEvent('theme:block:deselect', { detail: event.detail }))
+    });
+  </script>
+{%- endif -%}

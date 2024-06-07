@@ -1,0 +1,452 @@
+<!-- /sections/section-timeline.liquid -->
+
+{%- liquid
+  assign show_images = section.settings.show_images
+  assign bg_color = section.settings.bg_color
+  assign text_color = section.settings.color
+  assign dot_background = section.settings.dot_background
+  assign title = section.settings.title
+  assign text = section.settings.text
+  assign animation_anchor = '#IndexTimeline--' | append: section.id
+  assign animation_order = 0
+-%}
+
+<section id="IndexTimeline--{{ section.id }}"
+  class="index-timeline timeline{% if show_images %} timeline--images{% endif %} section-padding"
+  data-section-id="{{ section.id }}"
+  data-section-type="timeline">
+  <div class="{% if show_images %}{{ section.settings.width }}{% else %}wrapper--narrow{% endif %}">
+    <div class="timeline__wrapper">
+      {%- if title != blank or text != blank -%}
+        <div class="timeline__head hero__content__wrapper {{ section.settings.text_alignment }}">
+          <div class="hero__content hero__content--compact">
+            {%- if title != blank -%}
+              {%- assign font_size_class = section.settings.heading_size | prepend: 'heading-size-' -%}
+              {%- assign animation_order = animation_order | plus: 1 -%}
+              <h2 class="hero__title {{ font_size_class }}"
+                data-aos="hero"
+                data-aos-anchor="{{ animation_anchor }}"
+                data-aos-order="{{ animation_order }}"
+              >
+                {{ title }}
+              </h2>
+            {%- endif -%}
+
+            {%- if text != blank -%}
+              {%- assign font_size_class = section.settings.text_size | prepend: 'body-size-' -%}
+              {%- assign animation_order = animation_order | plus: 1 -%}
+              <div class="hero__rte {{ font_size_class }}"
+                data-aos="hero"
+                data-aos-anchor="{{ animation_anchor }}"
+                data-aos-order="{{ animation_order }}"
+              >
+                {{ text }}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="timeline__body" data-timeline-holder>
+        {%- if request.design_mode -%}
+          {%- assign blocks_counter_design = 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.subheading != blank or block.settings.title != blank or block.settings.text != blank or block.settings.button_text != blank -%}
+              <div class="timeline__row__editor"
+                data-timeline-row-editor
+                style="--row-count: {{ blocks_counter_design }};"
+                {{ block.shopify_attributes }}
+              >&nbsp;</div>
+              {%- assign blocks_counter_design = blocks_counter_design | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+        <div class="timeline__inner">
+          {%- assign blocks_counter = 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.subheading != blank or block.settings.title != blank or block.settings.text != blank or block.settings.button_text != blank -%}
+              {%- assign blocks_counter = blocks_counter | plus: 1 -%}
+              {%- assign animation_order = animation_order | plus: 1 -%}
+
+              <div class="timeline__row{% if blocks_counter == 1 %} is-selected{% endif %}" data-timeline-row>
+                {%- if show_images -%}
+                  <div class="timeline__image">
+                    <div class="timeline__image-inner">
+                      {%- render 'image', image: block.settings.image, sizes: '50vw, calc(100vw - 67px)', widths: '254, 308, 360, 462, 512, 620, 670, 720, 924, 1024, 1240, 1340, 1440, 1920, 2480', modifier: 'timeline__image-figure' -%}
+                    </div>
+                  </div>
+                {%- endif -%}
+
+                <div class="timeline__content">
+                  <div class="timeline__content__outer">
+                    <div class="timeline__content__inner"
+                      data-aos="hero"
+                      data-aos-anchor="{{ animation_anchor }}"
+                      data-aos-order="{{ animation_order }}"
+                      data-target-index="{{ blocks_counter }}"
+                    >
+                      {%- if block.settings.subheading != blank -%}
+                        {%- assign font_size_class = block.settings.subheading_size | prepend: 'body-size-' -%}
+                        <p class="hero__subheading {{ font_size_class }}">
+                          {{ block.settings.subheading }}
+                        </p>
+                      {%- endif -%}
+
+                      {%- if block.settings.title != blank -%}
+                        {%- assign font_size_class = block.settings.heading_size | prepend: 'heading-size-' -%}
+                        <h2 class="hero__title {{ font_size_class }}">
+                          {{ block.settings.title }}
+                        </h2>
+                      {%- endif -%}
+
+                      {%- if block.settings.text != blank -%}
+                        {%- assign font_size_class = block.settings.text_size | prepend: 'body-size-' -%}
+                        <div class="hero__rte {{ font_size_class }} {{ block.settings.text_style }}">
+                          {{ block.settings.text }}
+                        </div>
+                      {%- endif -%}
+
+                      {%- if block.settings.button_text != blank -%}
+                        {%- liquid
+                          assign button_style = block.settings.button_style
+                          if button_style == 'btn--text' and block.settings.show_arrow
+                            assign button_style = button_style | append: ' btn--text-no-underline'
+                          endif
+                        -%}
+
+                        <div class="hero__button">
+                          <a href="{{ block.settings.button_url | default: '#!' }}" class="btn {{ button_style }} {{ block.settings.button_size }} {{ block.settings.button_type }}">
+                            <span>{{ block.settings.button_text }}</span>
+
+                            {%- if block.settings.show_arrow -%}
+                              {%- render 'icon-arrow-right' -%}
+                            {%- endif -%}
+                          </a>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  </div>
+
+                  <span class="timeline__indicator"
+                    data-aos="hero"
+                    data-aos-anchor="{{ animation_anchor }}"
+                    data-aos-order="{{ animation_order }}"
+                    data-target-index="{{ blocks_counter }}"
+                  >
+                    <span class="timeline__indicator__line">&nbsp;</span>
+                  </span>
+
+                  <div class="timeline__dot__wrapper"
+                    data-aos="hero"
+                    data-aos-anchor="{{ animation_anchor }}"
+                    data-aos-order="{{ animation_order }}"
+                    data-target-index="{{ blocks_counter }}"
+                  >
+                    <div class="timeline__dot__holder">
+                      <button type="button" class="timeline__dot__button" aria-label="{{ 'general.accessibility.scroll_to_product' | t }}" data-timeline-button>
+                        <span class="timeline__dot">&nbsp;</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- style -%}
+  #IndexTimeline--{{ section.id }} {
+    --PT: {{ section.settings.padding_top }}px;
+    --PB: {{ section.settings.padding_bottom }}px;
+    --counter: {{ blocks_counter }};
+
+    {%- unless bg_color == 'rgba(0,0,0,0)' or bg_color == blank -%}
+      --bg: {{ bg_color }};
+    {%- endunless -%}
+
+    {%- unless text_color == 'rgba(0,0,0,0)' or text_color == blank -%}
+      --text: {{ text_color }};
+    {%- endunless -%}
+  }
+
+  {%- if dot_background != 'rgba(0,0,0,0)' and dot_background != '' -%}
+    #IndexTimeline--{{ section.id }} .timeline__indicator,
+    #IndexTimeline--{{ section.id }} .timeline__dot { --text: {{ dot_background }}; }
+  {%- endif -%}
+
+  {%- if request.visual_preview_mode -%}
+    .timeline__wrapper { max-height: 100vh; }
+  {%- endif -%}
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Timeline"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Text size",
+      "min": 1,
+      "max": 15,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Visually narrate your company's history and achievements. By offering a dynamic representation of events over time, it educates, captivates, and builds trust among customers.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 1,
+      "max": 15,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alignment",
+      "default": "text-left",
+      "options": [
+        {"value": "text-left","label": "Left"},
+        {"value": "text-center","label": "Centered"}
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show images",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background"
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Text"
+    },
+    {
+      "type": "color",
+      "id": "dot_background",
+      "label": "Hotspot"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "default": "wrapper--full",
+      "options": [
+        {"value": "wrapper--full", "label": "Full width"},
+        {"value": "wrapper--full-padded", "label": "Full width padded"}
+      ],
+      "info": "Applies only when images are used"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 32
+    }
+  ],
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "timeline",
+      "name": "Timeline",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "2010"
+        },
+        {
+          "type": "range",
+          "id": "subheading_size",
+          "label": "Subheading size",
+          "min": 1,
+          "max": 15,
+          "step": 1,
+          "default": 3
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Launch day"
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "Heading size",
+          "min": 1,
+          "max": 15,
+          "step": 1,
+          "default": 8
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>We celebrated our first step in the ecommerce world by selling our very first product.</p>"
+        },
+        {
+          "type": "range",
+          "id": "text_size",
+          "label": "Text size",
+          "min": 1,
+          "max": 15,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "label": "Text style",
+          "default": "font-body",
+          "options": [
+            {"value": "font-heading", "label": "Heading"},
+            {"value": "font-body", "label": "Body"}
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Text",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "button_type",
+          "label": "Color",
+          "default": "btn--primary",
+          "options": [
+            {"value": "btn--primary", "label": "Primary"},
+            {"value": "btn--secondary", "label": "Secondary"},
+            {"value": "btn--white", "label": "White"},
+            {"value": "btn--black", "label": "Black"}
+          ]
+        },
+        {
+          "type": "select",
+          "id": "button_size",
+          "label": "Size",
+          "default": "",
+          "options": [
+            { "label": "Small", "value": "btn--small" },
+            { "label": "Medium", "value": "" },
+            { "label": "Large", "value": "btn--large" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Style",
+          "default": "btn--solid",
+          "options": [
+            { "label": "Solid", "value": "btn--solid" },
+            { "label": "Outline", "value": "btn--outline" },
+            { "label": "Text", "value": "btn--text" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "Show arrow",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "timeline",
+          "settings": {
+            "subheading": "2010",
+            "title": "Launch day",
+            "text": "<p>We celebrated our first step in the ecommerce world by selling our very first product.</p>"
+          }
+        },
+        {
+          "type": "timeline",
+          "settings": {
+            "subheading": "2015",
+            "title": "Introduced our flagship product",
+            "text": "<p>Our journey to success was defined by our flagship product. It shaped us into the industry leader we are today.</p>"
+          }
+        },
+        {
+          "type": "timeline",
+          "settings": {
+            "subheading": "2020",
+            "title": "Launched our partner program",
+            "text": "<p>You're what makes us great. With the exciting launch of our partner program you have the power to earn free products!</p>"
+          }
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "aside", "custom.pre_footer", "footer"]
+  }
+}
+{% endschema %}

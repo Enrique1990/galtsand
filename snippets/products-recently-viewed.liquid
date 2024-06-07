@@ -1,0 +1,33 @@
+<!-- /snippets/products-recently-viewed.liquid -->
+{% comment %}
+    Renders list of recently viewed products in grid layout
+
+    Accepts:
+    - product: {Object} product (required)
+    - limit: {Integer} A maxmimum products to show
+    - product_recently_minimum: {Integer} A minimum products to show
+
+    Usage:
+    {% render 'products-recently-viewed', product: product, product_recently_minimum: product_recently_minimum %}
+{% endcomment %}
+
+{%- liquid
+  assign limit = limit | default: 4
+  assign column_count = limit
+
+  if limit > 4
+    assign column_count = '4'
+  endif
+-%}
+
+<div class="recent__wrapper fade-toggle is-hidden" id="RecentlyViewed-{{ section.id }}" data-recent-wrapper data-limit="{{ limit }}" data-minimum="{{ product_recently_minimum }}"{% if block %} {{ block.shopify_attributes }}{% endif %}>
+  <div class="grid-outer" style="--column-count: {{ column_count }}">
+    <grid-slider align-arrows>
+      <div class="recent__content grid grid--slider grid--mobile-slider{% if limit <= 4 %} grid--slider-disabled{% endif %}"
+        data-grid-slider
+        id="recently-viewed-products-{{ section.id }}"
+        style="display:none">
+      </grid-slider>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<style>
+  @media only screen and (min-width: 1150px) {
+      .js-wishlistBlock {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          column-gap: 3%;
+          padding-left: 40px;
+          padding-right: 40px;
+      }
+  }
+
+  @media only screen and (max-width: 1149px) and (min-width: 750px) {
+      .js-wishlistBlock {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          column-gap: 3%;
+          padding-left: 40px;
+          padding-right: 40px;
+      }
+  }
+
+  @media only screen and (max-width: 749px) {
+      .js-wishlistBlock {
+          display: block;
+          padding-left: 20px;
+          padding-right: 20px;
+      }
+      .c-product img {
+          max-height: 330px !important;
+      }
+  }
+
+  .c-product {
+      cursor: pointer;
+      margin-bottom: 20px;
+      text-align: center;
+  }
+
+  .c-product img {
+      max-height: 60vh;
+      transition: all .5s ease;
+  }
+
+  .c-product img:hover {
+      transform: scale(1.03);
+  }
+
+  .c-product h3.c-product__title {
+      margin-top: 10px;
+      position: relative;
+  }
+
+  .recently-title {
+      text-align: center;
+      background-color: #2e3b46;
+      color: white;
+      padding-top: 1px;
+      margin-bottom: 49px;
+      padding-bottom: 1px;
+  }
+</style>
+
+<div class="recently-title" >
+  <h2 class="title inline-richtext h2 scroll-trigger animate--slide-in"><b>Wishlist</b></h2>
+</div>
+<div class="js-wishlistBlock grid">
+  <!-- Wishlist items will be displayed here -->
+</div>
+
